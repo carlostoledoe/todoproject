@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from todoproject.core.throttling import LoginThrottle
 from .models import Task
 from .serializers import TaskSerializer
 
@@ -14,6 +17,7 @@ generar las URLs sin escribirlas manualmente.
 class TaskViewSet(viewsets.ModelViewSet): # Aquí definimos nuestra clase TaskViewSet. Al heredar de viewsets.ModelViewSet, estamos obteniendo una gran cantidad de funcionalidad "gratis" y automáticamente. Un ModelViewSet proporciona implementaciones para las operaciones CRUD (Crear, Leer, Actualizar, Borrar) para un modelo específico. 
     serializer_class = TaskSerializer # Esta línea le dice al ViewSet qué serializador debe usar para convertir las instancias del modelo Task a formatos de API (como JSON) y para validar los datos de entrada. En este caso, es nuestro TaskSerializer
     permission_classes = [permissions.IsAuthenticated]  # permission_classes define una lista de clases de permisos que se aplicarán a todas las acciones de este ViewSet. permissions.IsAuthenticated es una de las clases de permiso más comunes en DRF. Significa que solo los usuarios autenticados (es decir, aquellos que han iniciado sesión o han proporcionado un token válido) podrán acceder a cualquiera de las operaciones de este TaskViewSet. Si un usuario no autenticado intenta acceder, recibirá un error de "Autenticación fallida".
+    throttle_classes = [LoginThrottle]
 
     def get_queryset(self): # Un queryset es el conjunto de objetos que el ViewSet debería considerar para sus operaciones de listado o detalle.
         # Cada usuario solo ve sus propias tareas
